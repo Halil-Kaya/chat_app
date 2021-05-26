@@ -1,0 +1,87 @@
+html,body{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+:focus {
+    outline: 0;
+}
+.clear {
+    clear: both;
+}
+*{
+    list-style: none;
+    text-decoration: none;
+}
+
+
+
+body{
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items : center;
+    background-color: steelblue;
+}
+
+.container{
+    height: 500px;
+    width: 500px;
+    padding: 80px;
+    display:flex;
+    margin-bottom: 80px;
+    align-items : center;
+    border: 2px dashed black;
+    border-radius: 24px;
+    flex-direction:column;
+    background-color: white;
+}
+
+.container h1{
+    font-weight: bold;
+    font-size: 36px;
+}
+
+.container form{
+    display:flex;
+    flex-direction: column;
+    margin-top: 24px;
+}
+
+.container form div{
+    display:flex;
+    flex-direction:column;
+}
+
+.container form div label{
+    color: black;
+    font-size: 24px;
+}
+
+.container form div input{
+    width:500px;
+    height:24px;
+    padding:4px;
+    margin-bottom: 12px;
+    border-radius:12px;
+    border:1px solid #00ACEE;
+    padding:5px 18px;
+}
+
+.container form button{
+    padding:12px;
+    border-radius: 18px;
+    border:none;
+    background-color: #00ACEE;
+    color:white;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 36px;
+    cursor: pointer;
+}
+
+.container form button:hover{
+    background-color: #2cbcf5;
+}

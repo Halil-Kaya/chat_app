@@ -1,0 +1,366 @@
+html,body{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+*{
+    list-style: none;
+    text-decoration: none;
+}
+
+*:focus{
+    outline: none;
+}
+
+.chat{
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.chat .sidebar{
+    background-color: #f5f5f5;
+    border-right: 1px solid #ddd;
+    
+    width: 300px;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat .sidebar .search label{
+    cursor: pointer;
+}
+
+.contacts{
+    overflow: auto;
+}
+
+.contacts ul{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    outline: 0;
+    text-decoration: none;
+}
+
+.contacts ul li{
+    cursor: pointer;
+}
+
+.contacts ul li a{
+    display: flex;
+    padding: 10px;
+    align-items: center;
+}
+
+.contacts ul li a:hover{
+    background-color: white;
+}
+
+
+.contacts ul li a img{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.chat .sidebar .search img{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    align-items: center;
+    margin-right: 10px;
+}
+
+
+.inner .name{
+    font-weight: 500;
+    color: #111;
+    font-size: 15px;
+}
+
+.inner .message{
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.6);
+    padding-top: 3px;
+}
+
+.chat .sidebar .contacts ul li a .notification{
+    background-color: red;
+    margin-left: auto;
+    width: 18px;
+    height: 18px;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    text-align: center;
+    line-height: 18px;
+}
+
+.chat .sidebar .contacts ul li a .notification:empty{
+    display: none;
+}
+
+
+
+.chat .sidebar .search{
+    border-bottom: 1px solid #ddd;
+    height: 50px;
+    min-height: 50px;
+    display: flex;
+    padding: 0px 10px;
+    position: relative;
+    align-items: center;
+}
+
+.chat .sidebar .search input{
+    border: none;
+    border-radius: 50px;
+    width: 100%;
+    padding: 0 15px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 15px;
+}
+
+.chat .sidebar .search label{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    width: 40px;
+    height: 50px;
+    top: 0px;
+    right: 0px;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+
+
+.chat .sidebar .contacts{
+    flex: 1;
+}
+
+
+.chat .content{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat .content .message-header{
+    height: 50px;
+    min-height: 50px;
+    align-items: center;
+    padding: 0 15px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+}
+
+.chat .content .message-header img{
+    height: 35px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.chat .content .message-header .inner .name{
+    font-size: 15px;
+    font-weight: 600;
+    color: #111;
+}
+
+.chat .content .message-header .inner .last-message{
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.chat .content .message-header .actions{
+    display: flex;
+    margin-left: auto;
+}
+
+.chat .content .message-header .actions a{
+    font-size: 20px;
+    text-align: center;
+    color: rgba(17, 17, 17, 0.3);
+    width: 30px;
+}
+.chat .content .message-header .actions a:hover{
+    color: rgba(17, 17, 17, 0.7);
+}
+
+.chat .content .message-content{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    overflow: auto;
+}
+
+.chat .content .message-content::before{
+    content: '';
+    margin-bottom: auto;
+}
+
+.chat .content .message-content .message{
+    display: flex;
+    margin-top: 15px;
+    flex-direction: column;
+    align-self: flex-start;
+    max-width: 50%;    
+}
+
+.chat .content .message-content .message .bubble{
+    padding: 6px 15px;
+    background-color: #f7f7f7;
+    border-radius: 20px;
+    font-size: 14px;
+    line-height: 140%;
+}
+
+.chat .content .message-content .message.me{
+    align-self: flex-end;
+}
+
+.chat .content .message-content .message.me .bubble{
+    background-color: #2196f3;
+    color: white;
+}
+
+.chat .content .message-content .message.me .time{
+    align-self: flex-end;
+    padding: 5px 10px 0 0;
+}
+
+.chat .content .message-content .message .time{
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.4);
+    padding: 5px 0 0 10px
+}
+
+.chat .content .message-send{
+    border-top: 1px solid #ddd;
+    padding: 10px 5px;
+}
+
+.chat .content .message-send ul{
+    display: flex;
+    padding: 0;
+    margin:0;
+}
+
+.chat .content .message-send ul li{
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+}
+
+.chat .content .message-send ul li a{
+    color: white;
+    display: flex;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.chat .content .message-send ul li.input{
+    flex: 1;
+}
+
+.chat .content .message-send ul li.input input{
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 50px;
+    outline: none;
+    border: 1px solid #e5e5e5;
+    padding: 0 10px;
+    line-height: 36px;
+    font-size: 14px;
+    height: 36px;
+}
+
+.chat .content .message-send ul li.emoji-btn a{
+    background-color: #339af0;
+}
+
+.chat .content .message-send ul li.sound-btn a{
+    background-color: #ff5722;
+}
+
+.chat .content .message-send ul li.image-btn a{
+    background-color: #4caf50;
+}
+
+
+.contacts{
+    display: flex;
+    flex-direction: column;
+    justify-content:space-around;
+}
+
+.contacts .online-users{
+    height:80%;
+    overflow:auto;
+    padding:4px;
+    border: 1px solid green;
+}
+
+.contacts .rooms{
+    height:100%;
+    overflow:auto;
+    padding:4px;
+    border: 1px solid purple;
+}
+
+.contacts .create-room{
+    display: flex;
+    align-items: center;
+    justify-content:center;
+    margin:auto;
+    margin-bottom: 22px;
+}
+
+.contacts .create-room input{
+    flex: 1;
+    padding:2px 8px;
+    height:18px;
+    margin-right: 0px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border: 1px solid #2cbcf5;
+    outline:none;
+}
+
+.contacts .create-room button{
+    display: block;
+    height:24px;
+    padding:2px 6px;
+    background-color: #2cbcf5;
+    border-top-right-radius: 5px;
+    color: white;
+    border: none;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#emojiPicker{
+    display: none;
+    position:absolute;
+    bottom: 50px;
+}
+
+.emoji-btn{
+    position:relative;
+}
