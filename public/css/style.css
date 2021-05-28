@@ -364,3 +364,11 @@ html,body{
 .emoji-btn{
     position:relative;
 }
+
+.hidden-user-info{
+    display:none;
+}
+
+.actions a{
+    display : none;
+}
