@@ -16,6 +16,8 @@ const userManager = new UserManager()
 io.on('connection',(socket) => {
 
 
+    socket.emit('onlineUsers',userManager.getUsers())
+
 
     socket.on('firstConnect',({username,profileImage}) => {
         userManager.userJoin(socket.id,username,profileImage)
@@ -36,19 +38,10 @@ io.on('connection',(socket) => {
     //client disconnect oldugunda
     socket.on('disconnect',() => {
 
-        console.log('ne?')
 
-        console.log('silmeden once')
-        console.log(userManager.getUsers())
         userManager.userLeave(socket.id)
-        console.log('sildekten sonra')
-        console.log(userManager.getUsers())
-        console.log(socket.id)
 
         io.emit('onlineUsers',userManager.getUsers())
-
-        //butun clientlere kullanicinin ayrildigi mesajını veriyor
-        //io.emit('message','A user has left the chat')
 
     })
 

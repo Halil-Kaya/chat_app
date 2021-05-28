@@ -55,10 +55,5 @@ module.exports = class UserManager{
         return this.users;
     }
 
-    //diger online kullanicilari getirir
-    getOnlineUsers(id){
-        return this.users.filter(user => user.id !== id)
-    }
-
 }
 
