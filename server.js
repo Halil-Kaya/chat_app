@@ -2,16 +2,25 @@ const express = require('express')
 const http = require('http')
 const path = require('path')
 const socketio = require('socket.io')
-const UserManager = require('./utils/users')
+const UserManager = require('./utils/user-manager')
+const MessageManager = require('./utils/message-manager')
 const app = express()
 const server = http.createServer(app)
 const io = socketio(server)
 
 app.use(express.static(path.join(__dirname,'public')))
 
-
-
 const userManager = new UserManager()
+const messageManager = new MessageManager()
+
+
+app.get('/messages/:messageRoom',(req,res,next) => {
+
+    res.send(messageManager.getMessages(req.params.messageRoom))
+})
+
+
+
 
 io.on('connection',(socket) => {
 

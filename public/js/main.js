@@ -6,7 +6,8 @@ const textInput = document.querySelector('#text')
 const messageContentList = document.querySelector('.message-content')
 const selectFileInput = document.querySelector('#selectFile')
 const fileElem = document.querySelector('#fileElem')
-
+const messageHeaderImg = document.querySelector('#message-header-img')
+const messageHeaderName = document.querySelector('#message-header-name')
 const onlineUsersList = document.querySelector('.online-users')
 const roomsList = document.querySelector('.rooms')
 const newRoomNameInput = document.querySelector('#create-room-input')
@@ -34,6 +35,7 @@ socket.on('firstConnectId',(id) => {
 
 //online kullanicilar geliyor
 socket.on('onlineUsers',(users) => {
+
     const onlineUsersHtml = users.map(user => {
 
         if(user.id === userId) return ''
@@ -93,11 +95,52 @@ emojiPicker.addEventListener('emoji-click',event => {
 
 
 onlineUsersList.addEventListener('click',(e) => {
+    if(e.target.childNodes[1]){
 
+        let targetUserId = e.target.childNodes[1].innerText
+        let messageRoom = targetUserId + "_$_" + userId;
+        fetch(`/messages/${messageRoom}`)
+        .then(response => response.json())
+        .then(messages => {
+            updateUIForMessageContent(messages)
+        })
 
-    console.log(e.target)
+        messageHeaderImg.src = e.target.childNodes[3].src;
+        messageHeaderName.innerText = e.target.childNodes[5].innerText;
 
+    }
 })
+
+
+function updateUIForMessageContent(messages){
+
+    let messagesHtml = messages.map(message => {
+
+        if(message.userId == userId){
+
+            return  
+            `
+            <div class="message me">
+                <div class="bubble">${message.message}</div>
+                <span class="time">${message.time}</span>
+            </div>
+            `
+        }
+
+        return `
+        <div class="message">
+            <div class="bubble">${message.message} <span class="username time">${message.username}</span></div>
+            <span class="time">${message.time}</span>
+        </div>
+        `
+
+    })
+
+    messageContentList.innerHTML = messagesHtml.join('')
+    messageContentList.scrollTop = messageContentList.scrollHeight
+
+
+}
 
 
 function updateUIForUser(){
@@ -111,3 +154,7 @@ function updateUIForUser(){
     userImageSection.src = profileImage
     usernameSection.innerText = username;
 }
+
+/*
+fetch('/messages/adsa').then(res => res.json()).then(res => console.log(res))
+*/

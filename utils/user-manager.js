@@ -19,8 +19,9 @@ class User{
 
 module.exports = class UserManager{
 
-    constructor(){}
-    users = [];
+    constructor(){
+        this.users = []
+    }
 
     //join user to chat
     userJoin(id,username,profileImage){
@@ -44,6 +45,10 @@ module.exports = class UserManager{
         if(index !== -1){
             return this.users.splice(index,1)[0];
         }
+    }
+
+    getUsernameById(userId){
+        return this.users.find(user => user.id == userId).username
     }
 
     //get room users
