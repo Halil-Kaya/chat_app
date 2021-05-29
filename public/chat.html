@@ -180,18 +180,7 @@
             </div>
             <div class="message-content">
 
-                <div class="message">
-                    <div class="bubble">Merhaba dost, nasıl gidiyor keyifler? <span class="username time">Halil</span></div>
-                    <span class="time">14:55</span>
-                </div>
-                <div class="message">
-                    <div class="bubble">Merhaba dost, nasıl gidiyor keyifler? <span class="username time">Halil</span></div>
-                    <span class="time">14:55</span>
-                </div>
-                <div class="message me">
-                    <div class="bubble">Merhaba dost, nasıl gidiyor keyifler?</div>
-                    <span class="time">14:55</span>
-                </div>
+
             </div>
             <div class="message-send">
                 <ul>
@@ -203,12 +192,21 @@
                         </a>
                     </li>
                     <li class="input">
-                        <input type="text" id="text" placeholder="Bir Şeyler Yaz...">
+                        <form action="" id="form-send" style="width:100%">
+                            <input type="text" id="text" placeholder="Bir Şeyler Yaz...">
+                        </form>
                     </li>
 
-                    <li class="image-btn">
+                    <li class="send-btn" id="send-btn">
                         <a>
-                            <i id="selectFile" class="fa fa-image"></i>
+                            <i class="fa fa-paper-plane"></i>
+                            <input type="file" style="display:none" id="input" multiple>
+                        </a>
+                    </li>
+
+                    <li id="selectFile" class="image-btn">
+                        <a>
+                            <i class="fa fa-image"></i>
                             <input type="file" id="fileElem" style="display:none" id="input" multiple>
                         </a>
                     </li>

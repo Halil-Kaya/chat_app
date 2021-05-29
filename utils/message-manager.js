@@ -20,8 +20,12 @@ module.exports = class MessageManager{
     }
 
     addMessage(messageRoom,userId,username,message){
-        const time = this.today.getHours() + ":" + this.today.getMinutes()
-        this.messages.push(new Message(messageRoom,userId,username,message,time))
+        let minutes = this.today.getMinutes()
+        let hours = this.today.getHours()
+        const time = (hours < 10 ? '0'+hours : hours) + ":" + (minutes < 10 ? '0'+minutes : minutes)
+        const newMessage = new Message(messageRoom,userId,username,message,time)
+        this.messages.push(newMessage)
+        return newMessage
     }
 
     getMessages(messageRoom){

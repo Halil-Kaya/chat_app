@@ -12,6 +12,8 @@ const onlineUsersList = document.querySelector('.online-users')
 const roomsList = document.querySelector('.rooms')
 const newRoomNameInput = document.querySelector('#create-room-input')
 const btnAddRoom = document.querySelector('#btnAddRoom')
+const sendBtn = document.querySelector('#send-btn')
+const formSend = document.querySelector('#form-send')
 
 messageContentList.scrollTop = messageContentList.scrollHeight
 
@@ -20,6 +22,7 @@ let {username,profileImage}  = Qs.parse(location.search,{
     ignoreQueryPrefix : true
 })
 let userId = ""
+let whoMessage = ""
 
 updateUIForUser()
 
@@ -31,6 +34,13 @@ socket.emit('firstConnect',{username,profileImage})
 //kullanici baglandiktan sonra id sini kullaniciya gonderiyor
 socket.on('firstConnectId',(id) => {
     userId = id
+})
+
+socket.on('message',(message) => {
+
+    addUIForMessageContentFromOtherUser(message)
+
+    console.log(message)
 })
 
 //online kullanicilar geliyor
@@ -61,8 +71,6 @@ socket.on('onlineUsers',(users) => {
 })
 
 
-
-
 selectFileInput.addEventListener('click',() =>{
 
     if(fileElem){
@@ -78,6 +86,12 @@ function handleFiles(){
     console.log(fileList)
 }
 
+
+formSend.addEventListener('submit',(e) => {
+    e.preventDefault()
+    messageSend()
+})
+
 btnAddRoom.addEventListener('click',() => {
     console.log(newRoomNameInput.value)
 })
@@ -92,13 +106,21 @@ emojiPicker.addEventListener('emoji-click',event => {
 
 
 
+sendBtn.addEventListener('click',(e) => {
+
+    messageSend()
+
+})
 
 
 onlineUsersList.addEventListener('click',(e) => {
+    textInput.value = ''
     if(e.target.childNodes[1]){
 
         let targetUserId = e.target.childNodes[1].innerText
         let messageRoom = targetUserId + "_$_" + userId;
+        whoMessage = targetUserId + "_$_" + userId;
+
         fetch(`/messages/${messageRoom}`)
         .then(response => response.json())
         .then(messages => {
@@ -111,15 +133,50 @@ onlineUsersList.addEventListener('click',(e) => {
     }
 })
 
+const today = new Date();
+
+
+function addUIForMessageContentFromOtherUser(message){
+
+    if(messageRoomAndWhoMessageMatching(message.messageRoom,whoMessage)){
+
+        const messageHtml = `
+        <div class="message">
+            <div class="bubble">${message.message} <span class="username time">${message.username}</span></div>
+            <span class="time">${message.time}</span>
+        </div>
+        `
+
+        messageContentList.innerHTML = messageContentList.innerHTML + messageHtml
+        messageContentList.scrollTop = messageContentList.scrollHeight
+    }
+
+}
+
+
+function addUIForMessageContent(message){
+
+    let minutes = today.getMinutes()
+    let hours = today.getHours()
+    const time = (hours < 10 ? '0'+hours : hours) + ":" + (minutes < 10 ? '0'+minutes : minutes)
+    let messageHtml =`
+    <div class="message me">
+        <div class="bubble">${message}</div>
+        <span class="time">${time}</span>
+    </div>
+    `
+
+    messageContentList.innerHTML = messageContentList.innerHTML + messageHtml
+    messageContentList.scrollTop = messageContentList.scrollHeight
+    textInput.value = ""
+
+}
 
 function updateUIForMessageContent(messages){
 
     let messagesHtml = messages.map(message => {
-
-        if(message.userId == userId){
-
-            return  
-            `
+        if(message.userId.includes(userId)){
+            return `
             <div class="message me">
                 <div class="bubble">${message.message}</div>
                 <span class="time">${message.time}</span>
@@ -133,7 +190,6 @@ function updateUIForMessageContent(messages){
             <span class="time">${message.time}</span>
         </div>
         `
-
     })
 
     messageContentList.innerHTML = messagesHtml.join('')
@@ -155,6 +211,34 @@ function updateUIForUser(){
     usernameSection.innerText = username;
 }
 
-/*
-fetch('/messages/adsa').then(res => res.json()).then(res => console.log(res))
-*/
+
+//mesaji gonderiyor
+function messageSend(){
+
+    if(textInput.value && whoMessage){
+
+        let message = textInput.value
+
+        socket.emit('message',{whoMessage,userId,username,message})
+        
+        addUIForMessageContent(message)
+    }
+
+}
+
+
+function messageRoomAndWhoMessageMatching(messageRoom,whoMessage){
+
+    if(!(whoMessage || messageRoom)) return false
+
+    if(whoMessage.includes('_$_') && messageRoom.includes('_$_')){
+        let splitedWhoMessage = whoMessage.split('_$_')
+        if(messageRoom.includes(splitedWhoMessage[0]) && messageRoom.includes(splitedWhoMessage[1])){
+            return true
+        }
+
+        return false
+    }
+
+    return messageRoom == whoMessage
+}

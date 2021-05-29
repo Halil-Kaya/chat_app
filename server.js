@@ -35,14 +35,17 @@ io.on('connection',(socket) => {
     })
 
 
-    //tek bir cliente
-    socket.emit('message','Welcome to ChatCord!')
+    socket.on('message',({whoMessage,userId,username,message}) => {
 
-    //yeni bagli client disindaki butun clientlere
-    socket.broadcast.emit('message','A user has joined the chat')
+        const createdMessage = messageManager.addMessage(whoMessage,userId,username,message)
 
-    //butun clientlere
-    //io.emit()
+        if(whoMessage.includes('_$_')){
+            whoMessage = whoMessage.replace(userId,'')
+            whoMessage = whoMessage.replace('_$_','')
+        }
+
+        socket.to(whoMessage).emit('message',createdMessage)
+    })
 
     //client disconnect oldugunda
     socket.on('disconnect',() => {

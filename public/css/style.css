@@ -302,6 +302,9 @@ html,body{
     background-color: #4caf50;
 }
 
+.send-btn a{
+    background-color: #ff5722;
+}
 
 .contacts{
     display: flex;
