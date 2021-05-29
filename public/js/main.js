@@ -83,7 +83,16 @@ fileElem.addEventListener("change", handleFiles, false);
 
 function handleFiles(){
     const fileList = this.files;
-    console.log(fileList)
+    let data = new FormData()
+    data.append('file',fileList[0],fileList[0].name)
+    fetch('/upload', {
+        method: 'POST',
+        body: data
+    })
+    .then(response => response.text())
+    .then(text => {
+        textInput.value += " " + window.location.origin + text + " "
+    })
 }
 
 
@@ -142,7 +151,7 @@ function addUIForMessageContentFromOtherUser(message){
 
         const messageHtml = `
         <div class="message">
-            <div class="bubble">${message.message} <span class="username time">${message.username}</span></div>
+            <div class="bubble">${urlify(message.message)} <span class="username time">${message.username}</span></div>
             <span class="time">${message.time}</span>
         </div>
         `
@@ -161,7 +170,7 @@ function addUIForMessageContent(message){
     const time = (hours < 10 ? '0'+hours : hours) + ":" + (minutes < 10 ? '0'+minutes : minutes)
     let messageHtml =`
     <div class="message me">
-        <div class="bubble">${message}</div>
+        <div class="bubble">${urlify(message)}</div>
         <span class="time">${time}</span>
     </div>
     `
@@ -178,7 +187,7 @@ function updateUIForMessageContent(messages){
         if(message.userId.includes(userId)){
             return `
             <div class="message me">
-                <div class="bubble">${message.message}</div>
+                <div class="bubble">${urlify(message.message)}</div>
                 <span class="time">${message.time}</span>
             </div>
             `
@@ -186,7 +195,7 @@ function updateUIForMessageContent(messages){
 
         return `
         <div class="message">
-            <div class="bubble">${message.message} <span class="username time">${message.username}</span></div>
+            <div class="bubble">${urlify(message.message)} <span class="username time">${message.username}</span></div>
             <span class="time">${message.time}</span>
         </div>
         `
@@ -241,4 +250,12 @@ function messageRoomAndWhoMessageMatching(messageRoom,whoMessage){
     }
 
     return messageRoom == whoMessage
+}
+
+function urlify(text) {
+    var urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlRegex, function(url) {
+      return '<a class="file-url" target="_blank" href="' + url + '">' + url + '</a>';
+    })
+    
 }

@@ -2,6 +2,21 @@ const express = require('express')
 const http = require('http')
 const path = require('path')
 const socketio = require('socket.io')
+const multer = require('multer')
+
+const storage = multer.diskStorage({
+    destination : (req,file,cb) => {
+        cb(null,__dirname + '/public/uploads/')
+    },
+    filename : (req,file,cb) => {
+        req.filePath = `${Date.now() + "+" + file.originalname.replaceAll(' ','')}`
+        cb(null,`${req.filePath}`)
+    }
+
+})
+const upload = multer({storage : storage})
+
+
 const UserManager = require('./utils/user-manager')
 const MessageManager = require('./utils/message-manager')
 const app = express()
@@ -19,6 +34,9 @@ app.get('/messages/:messageRoom',(req,res,next) => {
     res.send(messageManager.getMessages(req.params.messageRoom))
 })
 
+app.post('/upload',upload.single('file'),(req,res,next) => {
+    res.send('/uploads/' + req.filePath)
+})
 
 
 

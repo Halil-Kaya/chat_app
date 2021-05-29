@@ -304,6 +304,7 @@ html,body{
 
 .send-btn a{
     background-color: #ff5722;
+    
 }
 
 .contacts{
@@ -374,4 +375,9 @@ html,body{
 
 .actions a{
     display : none;
+}
+
+.file-url{
+    color:aqua;
+    font-weight: bold;
 }
