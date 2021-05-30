@@ -381,3 +381,7 @@ html,body{
     color:aqua;
     font-weight: bold;
 }
+
+.userId{
+    display:none;
+}

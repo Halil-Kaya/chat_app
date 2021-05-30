@@ -33,15 +33,18 @@ socket.emit('firstConnect',{username,profileImage})
 
 //kullanici baglandiktan sonra id sini kullaniciya gonderiyor
 socket.on('firstConnectId',(id) => {
+
     userId = id
+
 })
 
 socket.on('message',(message) => {
 
     addUIForMessageContentFromOtherUser(message)
 
-    console.log(message)
 })
+
+
 
 //online kullanicilar geliyor
 socket.on('onlineUsers',(users) => {
@@ -53,7 +56,7 @@ socket.on('onlineUsers',(users) => {
         return `
         <li>
         <a>
-            <span id="userId" class="hidden-user-info">${user.id}</span>
+            <span class="userId" class="hidden-user-info">${user.id}</span>
             <img src="${user.profileImage}"
                 alt="">
             <div class="inner">
@@ -67,8 +70,8 @@ socket.on('onlineUsers',(users) => {
 
     onlineUsersList.innerHTML = "<ul>" + onlineUsersHtml.join('') + "</ul>"
 
-
 })
+
 
 
 selectFileInput.addEventListener('click',() =>{
@@ -113,18 +116,19 @@ emojiPicker.addEventListener('emoji-click',event => {
     textInput.value += event.detail.unicode
 })
 
-
-
 sendBtn.addEventListener('click',(e) => {
 
     messageSend()
 
 })
 
-
 onlineUsersList.addEventListener('click',(e) => {
     textInput.value = ''
     if(e.target.childNodes[1]){
+
+        if(e.target.children[3]){
+            e.target.removeChild(e.target.children[3])
+        }
 
         let targetUserId = e.target.childNodes[1].innerText
         let messageRoom = targetUserId + "_$_" + userId;
@@ -235,7 +239,6 @@ function messageSend(){
 
 }
 
-
 function messageRoomAndWhoMessageMatching(messageRoom,whoMessage){
 
     if(!(whoMessage || messageRoom)) return false
@@ -245,6 +248,25 @@ function messageRoomAndWhoMessageMatching(messageRoom,whoMessage){
         if(messageRoom.includes(splitedWhoMessage[0]) && messageRoom.includes(splitedWhoMessage[1])){
             return true
         }
+
+        let userWhoMessageSend = messageRoom;
+        userWhoMessageSend = userWhoMessageSend.replaceAll(userId,'')
+        userWhoMessageSend = userWhoMessageSend.replaceAll('_$_','')
+
+        let onlineUsersListHtml = [...onlineUsersList.children[0].children]
+
+        onlineUsersListHtml.forEach(liElement => {
+            
+            if(userWhoMessageSend.includes(liElement.children[0].children[0].innerText) && !(liElement.children[0].children[3])){
+
+                const divElement = document.createElement('div')
+                divElement.innerText = "!"
+                divElement.classList.add('notification')
+                liElement.children[0].appendChild(divElement)
+
+            }
+
+        })
 
         return false
     }
