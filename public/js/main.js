@@ -44,6 +44,11 @@ socket.on('message',(message) => {
 
 })
 
+socket.on('chatRooms',(rooms) => {
+
+    updateUIForRoomSection(rooms)
+
+})
 
 
 //online kullanicilar geliyor
@@ -53,7 +58,7 @@ socket.on('onlineUsers',(users) => {
 
         if(user.id === userId) return ''
 
-        return `
+        return ` 
         <li>
         <a>
             <span class="userId" class="hidden-user-info">${user.id}</span>
@@ -104,8 +109,18 @@ formSend.addEventListener('submit',(e) => {
     messageSend()
 })
 
+//oda ekliyor
 btnAddRoom.addEventListener('click',() => {
-    console.log(newRoomNameInput.value)
+
+    const newRoomName = newRoomNameInput.value;
+    newRoomNameInput.value = ''
+
+    if(newRoomName){
+
+        socket.emit('createRoom',{newRoomName,username,userId})
+
+    }
+    
 })
 
 emojiBtn.addEventListener('click',() => {
@@ -122,10 +137,35 @@ sendBtn.addEventListener('click',(e) => {
 
 })
 
+roomsList.addEventListener('click',(e) => {
+
+    if(e.target.children[1]){
+
+        const roomName = e.target.children[1].children[0].innerText
+
+        socket.emit('joinRoom',{roomName,username,userId})
+
+        whoMessage = roomName
+
+        fetch(`/messages/${roomName}`)
+        .then(response => response.json())
+        .then(messages => {
+            updateUIForMessageContent(messages)
+        })
+
+        messageHeaderImg.src = "/img/yesil_oda";
+        messageHeaderName.innerText = roomName
+
+    }
+
+})
+
+
 onlineUsersList.addEventListener('click',(e) => {
     textInput.value = ''
     if(e.target.childNodes[1]){
 
+        //bildirimi siliyorum
         if(e.target.children[3]){
             e.target.removeChild(e.target.children[3])
         }
@@ -167,6 +207,7 @@ function addUIForMessageContentFromOtherUser(message){
 }
 
 
+
 function addUIForMessageContent(message){
 
     let minutes = today.getMinutes()
@@ -182,6 +223,34 @@ function addUIForMessageContent(message){
     messageContentList.innerHTML = messageContentList.innerHTML + messageHtml
     messageContentList.scrollTop = messageContentList.scrollHeight
     textInput.value = ""
+
+}
+
+
+function updateUIForRoomSection(rooms){
+
+    let roomsHtml = rooms.map(room => {
+
+        let namesOfUsers = room.users.map(user => user.username)
+
+        namesOfUsers = namesOfUsers.join(',').slice(0,20)
+
+        
+        return `<li>
+            <a>
+                <img src="/img/${room.users.findIndex(user => user.userId == userId) == -1 ?'mavi':'yesil'}_oda"
+                    alt="">
+                <div class="inner">
+                    <div class="name">${room.roomName}</div>
+                    <div class="message">${namesOfUsers.length == 0?'':namesOfUsers + "..."}</div>
+                </div>
+                <div class="notification"></div>
+            </a>
+        </li>`
+
+    })
+
+    roomsList.innerHTML = `<ul>${roomsHtml.join('')}</ul>`
 
 }
 

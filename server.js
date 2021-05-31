@@ -19,14 +19,26 @@ const upload = multer({storage : storage})
 
 const UserManager = require('./utils/user-manager')
 const MessageManager = require('./utils/message-manager')
+const RoomManager = require('./utils/room-manager')
+
 const app = express()
 const server = http.createServer(app)
 const io = socketio(server)
 
 app.use(express.static(path.join(__dirname,'public')))
 
+app.use(
+    express.urlencoded({
+      extended: true
+    })
+  )
+  
+app.use(express.json())
+
+
 const userManager = new UserManager()
 const messageManager = new MessageManager()
+const roomManager = new RoomManager()
 
 
 app.get('/messages/:messageRoom',(req,res,next) => {
@@ -40,16 +52,39 @@ app.post('/upload',upload.single('file'),(req,res,next) => {
 
 
 
+
 io.on('connection',(socket) => {
 
 
     socket.emit('onlineUsers',userManager.getUsers())
+
+    socket.emit('chatRooms',roomManager.getAllRooms())
 
 
     socket.on('firstConnect',({username,profileImage}) => {
         userManager.userJoin(socket.id,username,profileImage)
         socket.broadcast.emit('onlineUsers',userManager.getUsers())
         socket.emit('firstConnectId',socket.id)
+    })
+
+    socket.on('createRoom',({newRoomName,username,userId}) => {
+
+        roomManager.addRoom(newRoomName,userId,username)
+
+        socket.join(newRoomName)
+
+        io.emit('chatRooms',roomManager.getAllRooms())
+        
+    })
+
+    socket.on('joinRoom',({roomName,username,userId}) => {
+
+        roomManager.addUserToRoom(roomName,userId,username)
+
+        socket.join(roomName)
+
+        io.emit('chatRooms',roomManager.getAllRooms())
+
     })
 
 
@@ -70,7 +105,10 @@ io.on('connection',(socket) => {
 
 
         userManager.userLeave(socket.id)
+        roomManager.leaveRoom(socket.id)
 
+
+        io.emit('chatRooms',roomManager.getAllRooms())
         io.emit('onlineUsers',userManager.getUsers())
 
     })
