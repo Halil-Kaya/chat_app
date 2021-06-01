@@ -26,10 +26,12 @@ module.exports = class RoomManager{
         return false;
     }
 
+    //odayi adina gore getiriyor
     getRoomByName(roomName){
         return this.rooms.find(room => room.roomName == roomName)
     }
 
+    //odaya kullaniciyi ekliyor
     addUserToRoom(roomName,userId,username){
 
         
@@ -56,6 +58,7 @@ module.exports = class RoomManager{
 
     }
 
+    //kullaniciyi odadan ayiriyor
     leaveRoom(userId){
 
         this.rooms.forEach(room => {
@@ -72,6 +75,7 @@ module.exports = class RoomManager{
 
     }
 
+    //butun odalari getiriyor
     getAllRooms(){
         return this.rooms;
     }

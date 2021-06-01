@@ -24,6 +24,7 @@ let {username,profileImage}  = Qs.parse(location.search,{
 let userId = ""
 let whoMessage = ""
 
+//kullanicinin bilgilerini guncelliyorum
 updateUIForUser()
 
 const socket = io()
@@ -38,12 +39,14 @@ socket.on('firstConnectId',(id) => {
 
 })
 
+//mesajlar geliyor
 socket.on('message',(message) => {
 
     addUIForMessageContentFromOtherUser(message)
 
 })
 
+//gruplar geliyor
 socket.on('chatRooms',(rooms) => {
 
     updateUIForRoomSection(rooms)
@@ -53,9 +56,12 @@ socket.on('chatRooms',(rooms) => {
 
 //online kullanicilar geliyor
 socket.on('onlineUsers',(users) => {
-
+    
+    //gonderilen kullanicilari map ile donup html elementine donusturuyorum
     const onlineUsersHtml = users.map(user => {
 
+        //bu ekrandaki kullanici id sine sahip kullaniciyi gostermiyorum
+        //yani kullanici online kullanicilarda kendisi disindaki kullanicilari goruyor
         if(user.id === userId) return ''
 
         return ` 
@@ -73,6 +79,7 @@ socket.on('onlineUsers',(users) => {
         `
     })
 
+    //online kullanicilari gosteriyorum
     onlineUsersList.innerHTML = "<ul>" + onlineUsersHtml.join('') + "</ul>"
 
 })
@@ -89,10 +96,14 @@ selectFileInput.addEventListener('click',() =>{
 
 fileElem.addEventListener("change", handleFiles, false);
 
+//dosya gonderme islemleri
 function handleFiles(){
     const fileList = this.files;
+    //gonderilecek dosyayi ayarliyor
     let data = new FormData()
     data.append('file',fileList[0],fileList[0].name)
+    
+    // /upload a POST istegi atarak dosyayi atiyor gelen cevap gonderilen dosyanin serverdaki pathi
     fetch('/upload', {
         method: 'POST',
         body: data
@@ -103,7 +114,7 @@ function handleFiles(){
     })
 }
 
-
+//mesaj gonderme yeri
 formSend.addEventListener('submit',(e) => {
     e.preventDefault()
     messageSend()
@@ -123,36 +134,46 @@ btnAddRoom.addEventListener('click',() => {
     
 })
 
+//emoji-picker i gosterme yeri
 emojiBtn.addEventListener('click',() => {
     emojiPicker.style.display = emojiPicker.style.display == 'block' ? 'none' : 'block'
 })
 
+//emojiye tiklanildiginda emojiyi inputa ekliyor
 emojiPicker.addEventListener('emoji-click',event => {
     textInput.value += event.detail.unicode
 })
 
+//mesaj gonderiyor
 sendBtn.addEventListener('click',(e) => {
 
     messageSend()
 
 })
 
+//odalardan birine tiklanildiginda buraya giriyor
 roomsList.addEventListener('click',(e) => {
 
+    //tiklanilan grup gecerli mi diye kontrol ediyor
     if(e.target.children[1]){
 
+        //oda adini aliyorum
         const roomName = e.target.children[1].children[0].innerText
 
+        //kullaniciyi odaya sokuyorum
         socket.emit('joinRoom',{roomName,username,userId})
 
+        //suan kiminle mesajlasiliyor onu degistiriyorum
         whoMessage = roomName
 
+        //mesajlari almak icin GET isteginde bulunuyorum
         fetch(`/messages/${roomName}`)
         .then(response => response.json())
         .then(messages => {
             updateUIForMessageContent(messages)
         })
 
+        ///kiminle mesajlasildigini ui olarak gostermek icin header bilgilerini degistiriyorum
         messageHeaderImg.src = "/img/yesil_oda";
         messageHeaderName.innerText = roomName
 
@@ -161,8 +182,11 @@ roomsList.addEventListener('click',(e) => {
 })
 
 
+//online kullanicilara dokunuldugunda burasi calisiyor
 onlineUsersList.addEventListener('click',(e) => {
     textInput.value = ''
+
+    //tiklanilan kisi var mi diye kontrol ediyor
     if(e.target.childNodes[1]){
 
         //bildirimi siliyorum
@@ -170,27 +194,37 @@ onlineUsersList.addEventListener('click',(e) => {
             e.target.removeChild(e.target.children[3])
         }
 
+        //kullanici id sini aliyorum
         let targetUserId = e.target.childNodes[1].innerText
+        
+        //messageRoom e getirilecek olan mesaj adini veriyorum
         let messageRoom = targetUserId + "_$_" + userId;
+        
+        //current olarak kiminle mesajlasildigi bilgisini tutuyorum
         whoMessage = targetUserId + "_$_" + userId;
 
+        //mesajlari almak icin GET isteginde bulunuyorum
         fetch(`/messages/${messageRoom}`)
         .then(response => response.json())
         .then(messages => {
             updateUIForMessageContent(messages)
         })
 
+        
+        ///kiminle mesajlasildigini ui olarak gostermek icin header bilgilerini degistiriyorum
         messageHeaderImg.src = e.target.childNodes[3].src;
         messageHeaderName.innerText = e.target.childNodes[5].innerText;
 
     }
 })
 
+
 const today = new Date();
 
-
+//karsi taraftan gelen mesajlari ui ye ekliyor
 function addUIForMessageContentFromOtherUser(message){
 
+    //mesaj karsi taraftan mi gonderilmis onun kontrolunu yapiyorum
     if(messageRoomAndWhoMessageMatching(message.messageRoom,whoMessage)){
 
         const messageHtml = `
@@ -207,7 +241,7 @@ function addUIForMessageContentFromOtherUser(message){
 }
 
 
-
+//bizim tarafindan gonderilen mesaji ui ye ekliyor
 function addUIForMessageContent(message){
 
     let minutes = today.getMinutes()
@@ -220,29 +254,33 @@ function addUIForMessageContent(message){
     </div>
     `
 
+    //mesaji ui ye ekliyorum
     messageContentList.innerHTML = messageContentList.innerHTML + messageHtml
     messageContentList.scrollTop = messageContentList.scrollHeight
     textInput.value = ""
 
 }
 
-
+//odalar kismini guncelliyor
 function updateUIForRoomSection(rooms){
 
+    //odalari map ile donup html elementine donusturuyor
     let roomsHtml = rooms.map(room => {
 
+        //odanin kullanicilarini aliyor
         let namesOfUsers = room.users.map(user => user.username)
 
+        //odanin kullanicilarinin arasina , isareti koyup birlestiriyor ve olusan stringin max 20 karakterine kadar aliyor
         namesOfUsers = namesOfUsers.join(',').slice(0,20)
 
-        
+        //eger kullanici odaya katildiysa yesil katilmadiysa mavi renkte gosteriyor
         return `<li>
             <a>
                 <img src="/img/${room.users.findIndex(user => user.userId == userId) == -1 ?'mavi':'yesil'}_oda"
                     alt="">
                 <div class="inner">
                     <div class="name">${room.roomName}</div>
-                    <div class="message">${namesOfUsers.length == 0?'':namesOfUsers + "..."}</div>
+                    <div class="message">${namesOfUsers.length == 1?'':namesOfUsers + "..."}</div>
                 </div>
                 <div class="notification"></div>
             </a>
@@ -250,12 +288,16 @@ function updateUIForRoomSection(rooms){
 
     })
 
+    //gruplari gosteriyorum
     roomsList.innerHTML = `<ul>${roomsHtml.join('')}</ul>`
 
 }
 
-function updateUIForMessageContent(messages){
 
+//mesaj kismini guncelliyorum
+function updateUIForMessageContent(messages){
+    
+    //messajlari map ile donuyorum mesaji kullanicinin kim olduguna gore html elementine donusturuyorum
     let messagesHtml = messages.map(message => {
         if(message.userId.includes(userId)){
             return `
@@ -274,6 +316,7 @@ function updateUIForMessageContent(messages){
         `
     })
 
+    //mesajlari ui de guncelliyorum
     messageContentList.innerHTML = messagesHtml.join('')
     messageContentList.scrollTop = messageContentList.scrollHeight
 
@@ -281,6 +324,7 @@ function updateUIForMessageContent(messages){
 }
 
 
+//kullaniciya gore tasarimi degistiriyorum
 function updateUIForUser(){
 
     try{
@@ -308,16 +352,24 @@ function messageSend(){
 
 }
 
+//gonderilen messageRoom ile suanki mesajlasilan whoMessage eslesiyor mu diye kontrol ediyorum
 function messageRoomAndWhoMessageMatching(messageRoom,whoMessage){
 
+    //mesajlasilan kimse yoksa false donuyorum
     if(!(whoMessage || messageRoom)) return false
 
+    //eger 2 tarafta _$_ isareti iceriyorsa sirasina dikkat etmeden karsilastirma yapiyorum
     if(whoMessage.includes('_$_') && messageRoom.includes('_$_')){
+
+
         let splitedWhoMessage = whoMessage.split('_$_')
         if(messageRoom.includes(splitedWhoMessage[0]) && messageRoom.includes(splitedWhoMessage[1])){
             return true
         }
 
+        //asagidaki islemlerde eger mesaj gonderen kisi suan ekranda gozukmuyorsa(baska kullanicinin ekranindaysam)
+        //o kullanicinin yanina bildirim isareti ekliyor
+        
         let userWhoMessageSend = messageRoom;
         userWhoMessageSend = userWhoMessageSend.replaceAll(userId,'')
         userWhoMessageSend = userWhoMessageSend.replaceAll('_$_','')
@@ -343,6 +395,7 @@ function messageRoomAndWhoMessageMatching(messageRoom,whoMessage){
     return messageRoom == whoMessage
 }
 
+//parametre olarak gonderilen metnin icindeki url leri a etiketinin icerine aliyor
 function urlify(text) {
     var urlRegex = /(https?:\/\/[^\s]+)/g;
     return text.replace(urlRegex, function(url) {

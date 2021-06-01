@@ -1,12 +1,3 @@
-/*
-User : 
-{
-    id,
-    username,
-    profileImage
-}
-*/
-
 class User{
     
     constructor(id,username,profileImage) {
@@ -23,7 +14,7 @@ module.exports = class UserManager{
         this.users = []
     }
 
-    //join user to chat
+    //kullanici ekliyor
     userJoin(id,username,profileImage){
 
         const user = new User(id,username,profileImage);
@@ -33,12 +24,12 @@ module.exports = class UserManager{
         return user;
     }
 
-    //Get Current user 
+    //kullaniciyi id ye gore getiriyor
     getCurrentUser(id){
         return this.users.find(user => user.id === id)
     }
 
-    //user leaves chat
+    //id si gonderilen kullaniciyi siliyor
     userLeave(id){
         const index = this.users.findIndex(user => user.id === id);
 
@@ -47,15 +38,12 @@ module.exports = class UserManager{
         }
     }
 
+    //id ye gore kullanici adini getiriyor
     getUsernameById(userId){
         return this.users.find(user => user.id == userId).username
     }
 
-    //get room users
-    getRoomUsers(room){
-        return this.users.filter(user => user.room === room);
-    }
-
+    //kullanicilari getiriyor
     getUsers(){
         return this.users;
     }
